@@ -7,6 +7,7 @@
 int attackStringW;
 int attackStringH;
 
+static std::string namecolor({ '\x7', 'E', '3', 'B', '4', '5', '5' }); //E3B455
 static std::string yellow({ '\x7', 'C', '8', 'A', '9', '0', '0' }); //C8A900
 static std::string blue({ '\x7', '0', 'D', '9', '2', 'F', 'F' }); //0D92FF
 static std::string red({ '\x7', 'F', 'F', '3', 'A', '3', 'A' }); //FF3A3A
@@ -44,13 +45,13 @@ void CLogs::Event(CGameEvent* pEvent, const FNV1A_t uNameHash)
 				PlayerInfo_t pi{};
 				I::EngineClient->GetPlayerInfo(pEntity->GetIndex(), &pi);
 
-				std::string string = std::format("{}{} voted {}", (pEntity->m_iTeamNum() == pLocal->m_iTeamNum() ? "" : "[Enemy] "), (pi.name), (bVotedYes ? "Yes" : "No"));
-				std::string cstring = std::format("{}{}{}{}{} voted {}{}", (white), (pEntity->m_iTeamNum() == pLocal->m_iTeamNum() ? "" : "[Enemy] "), (yellow), (pi.name), (white), (bVotedYes ? green : red), (bVotedYes ? "Yes" : "No"));
+				std::string string = std::format("{}{} voted {}", (pEntity->m_iTeamNum() == pLocal->m_iTeamNum() ? "" : "[Other team vote] "), (pi.name), (bVotedYes ? "Yes" : "No"));
+				std::string cstring = std::format("{}{}{}{}{} voted {}{}.", (white), (pEntity->m_iTeamNum() == pLocal->m_iTeamNum() ? "" : "[Other team vote] "), (namecolor), (pi.name), (white), (bVotedYes ? red : green), (bVotedYes ? "Yes" : "No"));
 
 				if (Vars::Logging::VoteCast::LogTo.Value & (1 << 0))
 					F::Notifications.Add(string);
 				if (Vars::Logging::VoteCast::LogTo.Value & (1 << 1))
-					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{}{} {}", Vars::Menu::Theme::Accent.Value.to_hex(), Vars::Menu::CheatPrefix.Value, cstring).c_str());
+					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{:06X}{} {}", 0x0C69CF, "[RiJiN]", cstring).c_str());
 				if (Vars::Logging::VoteCast::LogTo.Value & (1 << 2))
 					I::EngineClient->ClientCmd_Unrestricted(std::format("tf_party_chat \"{}\"", string).c_str());
 				if (Vars::Logging::VoteCast::LogTo.Value & (1 << 3))
@@ -76,12 +77,12 @@ void CLogs::Event(CGameEvent* pEvent, const FNV1A_t uNameHash)
 				}
 
 				std::string string = std::format("{} is now a {}", (pi.name), (Utils::GetClassByIndex(pEvent->GetInt("class"))));
-				std::string cstring = std::format("{}{}{} is now a {}{}", (yellow), (pi.name), (white), (yellow), (Utils::GetClassByIndex(pEvent->GetInt("class"))));
+				std::string cstring = std::format("{}{}{}{}{} is now a {}{}.", (white), "[RiJiN]", (pi.name), (white), " Player ", (Utils::GetClassByIndex(pEvent->GetInt("class"))));
 
 				if (Vars::Logging::ClassChange::LogTo.Value & (1 << 0))
 					F::Notifications.Add(string);
 				if (Vars::Logging::ClassChange::LogTo.Value & (1 << 1))
-					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{}{} {}", Vars::Menu::Theme::Accent.Value.to_hex(), Vars::Menu::CheatPrefix.Value, cstring).c_str());
+					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{:06X}{} {}", 0x0C69CF, "{RiJiN}", cstring).c_str());
 				if (Vars::Logging::ClassChange::LogTo.Value & (1 << 2))
 					I::EngineClient->ClientCmd_Unrestricted(std::format("tf_party_chat \"{}\"", string).c_str());
 				if (Vars::Logging::ClassChange::LogTo.Value & (1 << 3))
@@ -113,12 +114,12 @@ void CLogs::Event(CGameEvent* pEvent, const FNV1A_t uNameHash)
 
 				const auto maxHealth = pEntity->GetMaxHealth();
 				std::string string = std::format("You hit {} for {} damage{}({} / {})", (pi.name), (nDamage), (bCrit ? " (crit) " : " "), (nHealth), (maxHealth));
-				std::string cstring = std::format("{}You hit {}{}{} for {}{} damage{}{}({} / {})", (white), (yellow), (pi.name), (white), (red), (nDamage), (bCrit ? " (crit) " : " "), (yellow), (nHealth), (maxHealth));
+				std::string cstring = std::format("{}You hit {}{}{} for {}{} damage{}{}({} / {}.)", (white), (namecolor), (pi.name), (white), (red), (nDamage), (bCrit ? " (crit) " : " "), (namecolor), (nHealth), (maxHealth));
 
 				if (Vars::Logging::Damage::LogTo.Value & (1 << 0))
 					F::Notifications.Add(string);
 				if (Vars::Logging::Damage::LogTo.Value & (1 << 1))
-					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{}{} {}", Vars::Menu::Theme::Accent.Value.to_hex(), Vars::Menu::CheatPrefix.Value, cstring).c_str());
+					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{:06X}{} {}", 0x0C69CF, "[RiJiN]", cstring).c_str());
 				if (Vars::Logging::Damage::LogTo.Value & (1 << 2))
 					I::EngineClient->ClientCmd_Unrestricted(std::format("tf_party_chat \"{}\"", string).c_str());
 				if (Vars::Logging::Damage::LogTo.Value & (1 << 3))
@@ -149,12 +150,12 @@ void CLogs::UserMessage(UserMessageType type, bf_read& msgData)
 				const bool bSameTeam = team == pLocal->m_iTeamNum();
 
 				std::string string = std::format("{}{} called a vote on {}", (bSameTeam ? "" : "[Enemy] "), (infoCaller.name), (infoTarget.name));
-				std::string cstring = std::format("{}{}{}{}{} called a vote on {}{}", (white), (bSameTeam ? "" : "[Enemy] "), (yellow), (infoCaller.name), (white), (yellow), (infoTarget.name));
+				std::string cstring = std::format("{}{}{}{}{} called a vote on {}{}.", (white), (bSameTeam ? "" : "[Enemy] "), (namecolor), (infoCaller.name), (white), (namecolor), (infoTarget.name));
 
 				if (Vars::Logging::VoteStart::LogTo.Value & (1 << 0))
 					F::Notifications.Add(string);
 				if (Vars::Logging::VoteStart::LogTo.Value & (1 << 1))
-					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{}{} {}", Vars::Menu::Theme::Accent.Value.to_hex(), Vars::Menu::CheatPrefix.Value, cstring).c_str());
+					I::ClientModeShared->m_pChatElement->ChatPrintf(0, std::format("{:06X}{} {}", 0x0C69CF, "[RiJiN]", cstring).c_str());
 				if (Vars::Logging::VoteStart::LogTo.Value & (1 << 2))
 					I::EngineClient->ClientCmd_Unrestricted(std::format("tf_party_chat \"{}\"", string).c_str());
 				if (Vars::Logging::VoteStart::LogTo.Value & (1 << 3))
